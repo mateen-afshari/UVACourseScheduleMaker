@@ -1,0 +1,134 @@
+
+{% load static %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% load socialaccount %}
+{% load lous_extra %}
+
+<head>
+
+</head>
+
+<body>
+  
+<nav class="navbar navbar-expand-md bg-dark navbar-dark sticky-top">
+    <div class="container-fluid">
+        <ul class="navbar-nav">
+        <a class="navbar-brand" href="/">UVA Courses</a>
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+            <a class="nav-link " href="/">Departments</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/schedule/">My Schedule</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link " href="/all-profiles/">Find Friends</a>
+        </li>
+        {% endif %}
+        </ul>
+        <ul class="navbar-nav d-flex align-items-center">
+          <li class="nav-item">
+            <form class="d-flex my-3" action="/search/" method="post">
+                {% csrf_token %}
+                <input type="search" class="form-control rounded" placeholder="Search" name="searched" />
+                <input class="btn btn-outline-secondary" type="submit" value="Search">
+            </form>
+            </li>
+            <li class="nav-item dropdown">
+            {% if user.is_authenticated %}
+            <a class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {{user.first_name}}
+            </a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/profile/">My Profile</a></li>
+                <li><a class="dropdown-item" href="/my-invites/">Friend Requests</a></li>
+                <li><a class="dropdown-item" href="/logout/">Log out</a>
+            </ul>
+            </li>
+            
+            {% else %}
+            <a class ="nav-link" href="{% provider_login_url 'google' %}">Login</a>
+            {% endif %}
+            <li class="nav-item mx-5">  </li>
+     
+        </ul>
+    </div>
+    </nav>
+
+
+
+    <html>
+        <br>
+        <center>
+            <h2>Search Results For "{{searched}}"</h2>
+        </center>
+        <ul class="d-flex justify-content-center list-group mb-5 px-5" style="padding-bottom: 80px">
+        
+          <div class="d-flex justify-content-between">
+            <h4 class="pb-1 pt-4">Courses</h2>
+           
+          </div>
+      
+          <li class="list-group-item">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">Course</th>
+                  <th scope="col">Credits</th>
+                  <th scope="col">Days</th>
+                  <th scope="col">Time</th>
+                  <th scope="col">Instructor</th>
+                  <th scope="col">Location</th>
+                </tr>
+              </thead>
+          <tbody>
+
+          {% for course in courses %}
+          <tr>
+            <td style="width:25%">{{course.subject}} {{course.number}} - {{course.title}}</td>
+            <td style="width:10%">{{ course.credits }} Credits</td> 
+            <td style="width:10%">{% for sp in course.days|splitDays %}
+              {{sp}}
+              <br>
+              <br>
+              {% endfor %}
+            </td>
+            <td style="width:18%">
+              {% for sp in course.time|splitTimes %}
+              {{sp}}
+              <br>
+              <br>
+              {% endfor %}
+            </td>
+            <td style="width:15%">{{course.instructor}}</td>
+            <td style="width:15%">{{course.location}}</td>
+            {% if user.is_authenticated %}
+              
+                    <form action="/processClass/" method="post">
+                        {% csrf_token %}
+                        
+                        <input id="title" type="hidden" name="title" value="{{course.description}}">
+                        <input id="subject" type="hidden" name="subject" value="{{course.subject}}">
+                        <input id="section" type="hidden" name="section" value="{{course.section}}">
+                        <input id="number" type="hidden" name="number" value="{{course.number}}">
+                        <input id="credits" type="hidden" name="credits" value="{{course.credits}}">
+                        <input id="instructor" type="hidden" name="instructor" value="{{course.instructor}}">
+                        <input id="days" type="hidden" name="days" value="{{course.days}}">
+                        <input id="time" type="hidden" name="time" value="{{course.time}}">
+                        <input id="location" type="hidden" name="location" value="{{course.location}}">
+                        <input id="courseid" type="hidden" name="courseid" value="{{course.course_id}}">
+                        <input id="userid" type="hidden" name="userid" value="{{user.id}}">
+                        <input type="hidden" name="next" value="/schedule/">
+                        
+                        <td style="width:10%"><input class="btn btn-outline-success" type="submit" value="Add to Schedule"></td>
+                    </form>
+                    
+                {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+          
+        </ul>
+      </html>

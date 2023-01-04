@@ -1,0 +1,17 @@
+
+
+{% block title %}
+My Profile
+{% endblock title %}
+
+{% block content %}
+<h1>Profile of: {{profile.user}}</h1>
+
+<h1>Friends List: </h1>
+    {% for friend in profile.get_friends %}
+    {{friend}}
+    <br>
+    {% endfor %}
+    Friend's number: {{profile.get_friends_no}}
+
+{% endblock content %}

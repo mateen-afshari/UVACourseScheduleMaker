@@ -1,0 +1,144 @@
+{% regroup data by description as newList %}
+<head>
+  {% load static %}
+  {% load bootstrap5 %}
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+  {% load socialaccount %}
+  {% load lous_extra %}
+
+    <title>{{newList.0.list.0.subject}} - UVA Courses</title>
+
+   </head>
+
+<body>
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark sticky-top">
+    <div class="container-fluid">
+      <ul class="navbar-nav">
+        <a class="navbar-brand" href="/">UVA Courses</a>
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link active" href="/">Departments</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link " href="/schedule/">My Schedule</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link " href="/all-profiles/">Find Friends</a>
+        </li>
+        {% endif %}
+        </ul>
+        <ul class="navbar-nav d-flex align-items-center">
+          <li class="nav-item">
+            <form class="d-flex my-3" action="/search/" method="post">
+              {% csrf_token %}
+              <input type="search" class="form-control rounded" placeholder="Search" name="searched" />
+              <input class="btn btn-outline-secondary" type="submit" value="Search">
+            </form>
+          </li>
+          <li class="nav-item dropdown">
+          {% if user.is_authenticated %}
+            <a class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {{user.first_name}}
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/profile/">My Profile</a></li>
+              <li><a class="dropdown-item" href="/my-invites/">Friend Requests</a></li>
+              <li><a class="dropdown-item" href="/logout/">Log out</a>
+            </ul>
+          </li>
+          {% else %}
+          <a class ="nav-link" href="{% provider_login_url 'google' %}">Login</a>
+          {% endif %}
+          <li class="nav-item mx-5">  </li>
+     
+      </ul>
+    </div>
+  </nav>
+
+
+  <ul class="d-flex justify-content-center list-group px-5" style="padding-bottom: 80px">
+    
+    {% for x in newList %}
+
+    <div class="d-flex justify-content-between">
+      <h4 class="pb-1 pt-4">{{x.list.0.subject}} {{x.list.0.catalog_number}}  {{x.grouper}}</h2>
+      <div class="link-primary pb-1 pt-4">
+        <a  href="https://thecourseforum.com/course/{{x.list.0.subject}}/{{x.list.0.catalog_number}}/" target="_blank"><img src="https://thecourseforum.com/static/base/img/new_logo.png" width="40" height="40"></a>
+        <a  href="https://vagrades.com/uva/{{x.list.0.subject}}{{x.list.0.catalog_number}}/" target="_blank"><img src="https://vagrades.com/static/media/logo.05faa865.svg" width="40" height="40"></a>
+      </div>
+      
+    </div>
+
+    <li class="list-group-item">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Type</th>
+            <th scope="col">Time</th>
+            <th scope="col">Instructor</th>
+            <th  scope="col">Seats Available</th>
+            <th  scope="col">Wait List</th>
+            <th scope="col">Location</th>
+            {% if user.is_authenticated %}
+            <th scope="col">Add to Schedule</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+        {% for y in x.list|sortMeeting %}     
+          <tr>
+            <td style="width:15%">{{y.component}} - {{y.units}} Credits</td>
+            <td style="width:20%">
+              {% for l in y.meetings %} 
+                  {{l.days}} {{l.start_time|convertTime }} - {{l.end_time|convertTime}}
+                  <br>
+                  <br>
+              {% endfor %}
+            </td>
+            <td style="width:15%">{{y.instructor.name}}</td>
+            <td style="width:10%">{{y.enrollment_available}} / {{y.class_capacity}}</td>
+            <td style="width:10%">{{y.wait_list}} / {{y.wait_cap}}</td>
+            <td style="width:20%">
+              {% for l in y.meetings %} 
+                {{l.facility_description}}
+                  <br>
+                  <br>
+              {% endfor %}
+              </td>
+              {% if user.is_authenticated %}
+              
+              <form action="/processClass/" method="post">
+                {% csrf_token %}
+                <input id="userid" type="hidden" name="userid" value="{{user.id}}">
+                
+                <input id="title" type="hidden" name="title" value="{{y.description}}">
+                <input id="subject" type="hidden" name="subject" value="{{y.subject}}">
+                <input id="number" type="hidden" name="number" value="{{y.catalog_number}}">
+                <input id="section" type="hidden" name="section" value="{{y.course_section}}">
+                <input id="credits" type="hidden" name="credits" value="{{y.units}}">
+                <input id="instructor" type="hidden" name="instructor" value="{{y.instructor.name}}">
+                <input id="days" type="hidden" name="days" value="{% for l in y.meetings %}{{l.days}} {% endfor %}">
+                <input id="time" type="hidden" name="time" value="{% for l in y.meetings %}{{l.start_time|convertTime}} - {{l.end_time|convertTime}}  {% endfor %}">
+                <input id="location" type="hidden" name="location" value="{{y.meetings.0.facility_description}}">
+                <input id="department" type="hidden" name="department" value="{{newList.0.list.0.subject}}">
+                <input id="courseid" type="hidden" name="courseid" value="{{y.course_number}}">
+                <input id="userid" type="hidden" name="userid" value="{{user.id}}">
+                <input type="hidden" name="next" value="{{ request.path }}">
+                
+                <td style="width:10%"><input class="btn btn-outline-success" type="submit" value="Add"></td>
+              </form>
+              
+              {% endif %}
+          </tr>
+      
+        {% endfor %}
+      </tbody>
+      </table>
+    </li>
+    
+    
+  {% endfor %}
+  </ul>
+  
+</body>

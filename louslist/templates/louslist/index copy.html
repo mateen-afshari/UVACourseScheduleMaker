@@ -1,0 +1,53 @@
+{% load static %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+
+<meta name="google-signin-client_id" content="325930513099-ibniatcvkcusnjiqhuised9uviau90fh.apps.googleusercontent.com">
+
+<script>
+gapi.load('auth2', function() {
+    gapi.auth2.init();
+})
+</script>
+
+<nav class="navbar navbar-expand-lg bg-secondary text-white d-flex justify-content-center">
+  <span class="navbar-text text-left">
+    Signed in as 
+    <script>
+      profile.getName();
+    </script>
+  </span>
+    <h1 class="p-3">UVa Class Schedules</h1>
+    <div class="flex p-2">
+
+    </div>
+    
+</nav>
+
+
+
+<script>
+    function onSignIn(googleUser) {
+        var profile = googleUser.getBasicProfile();
+        console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+        console.log('Name: ' + profile.getName());
+        console.log('Image URL: ' + profile.getImageUrl());
+        console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+        window.location.replace("https://a20-uva.herokuapp.com/louslist");
+        }
+  function signOut() {
+    var auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+      console.log('User signed out.');
+    });
+  }
+</script>
+
+    <h1></h1>
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+
+
+

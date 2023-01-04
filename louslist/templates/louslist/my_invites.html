@@ -1,0 +1,101 @@
+{% load static %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% load socialaccount %}
+
+<head>
+  <title>Friend Requests - UVA Courses</title>
+</head>
+
+<nav class="navbar navbar-expand-md bg-dark navbar-dark sticky-top">
+  <div class="container-fluid">
+    <ul class="navbar-nav">
+      <a class="navbar-brand" href="/">UVA Courses</a>
+      {% if user.is_authenticated %}
+      <li class="nav-item">
+        <a class="nav-link " href="/">Departments</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/schedule/">My Schedule</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link " href="/all-profiles/">Find Friends</a>
+      </li>
+      {% endif %}
+      </ul>
+      <ul class="navbar-nav d-flex align-items-center">
+        <li class="nav-item">
+          <form class="d-flex my-3" action="/search/" method="post">
+            {% csrf_token %}
+            <input type="search" class="form-control rounded" placeholder="Search" name="searched" />
+            <input class="btn btn-outline-secondary" type="submit" value="Search">
+          </form>
+        </li>
+        <li class="nav-item dropdown">
+        {% if user.is_authenticated %}
+          <a class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{user.first_name}}
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="/profile/">My Profile</a></li>
+            <li><a class="dropdown-item" href="/my-invites/">Friend Requests</a></li>
+            <li><a class="dropdown-item" href="/logout/">Log out</a>
+          </ul>
+        </li>
+        
+        {% else %}
+        <a class ="nav-link" href="{% provider_login_url 'google' %}">Login</a>
+        {% endif %}
+        <li class="nav-item mx-5">  </li>
+    </ul>
+  </div>
+</nav>
+
+
+{% block content %}
+
+    {% if is_empty %}
+    <div class="row">
+      <div class="d-flex justify-content-around mt-5">
+          <div class="card " style="width: 18rem;">
+              <div class="card-body">
+                <h5 class="card-title">No pending friend requests</h5>
+              </div>
+            </div>
+      </div>
+  </div>
+    {% endif %}
+
+    <div class="row">
+      {% for obj in qs %}
+      <div class="col-sm-3 d-flex justify-content-around mt-5">
+          <div class="card " style="width: 16rem;">
+              <img class="card-img-top" src="{{obj.user.socialaccount_set.all.0.get_avatar_url}}">
+              <div class="card-body">
+                <h5 class="card-title">{{ obj.user.first_name }}</h5>
+              </div>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">Username: {{ obj.user }}</li>
+                  <li class="list-group-item">Bio: {{ obj.bio }}</li>
+                <li class="list-group-item d-flex justify-content-center"><a href="/profiles/{{obj.user.id}}" class="btn btn-secondary">View Profile</a></li>
+            <li class="list-group-item"> 
+              <div class="d-flex justify-content-between"> 
+              <form action = "/my-invites/reject/" method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="profile_pk" value={{obj.pk}}>
+              <button type="submit" class="mt-3 btn btn-danger">Reject</button>
+              </form>
+              <form action = "/my-invites/accept/" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="profile_pk" value={{obj.pk}}>
+                <button type="submit" class="mt-3 btn btn-success">Accept</button>
+            </form>
+            </li>
+          </div>
+              </ul>
+            </div>
+      {% endfor %}
+    </div>
+
+{% endblock content %}

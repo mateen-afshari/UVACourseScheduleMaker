@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+
+<meta name="google-signin-client_id" content="325930513099-ibniatcvkcusnjiqhuised9uviau90fh.apps.googleusercontent.com">
+
+<script>
+gapi.load('auth2', function() {
+    gapi.auth2.init();
+})
+</script>
+
+
+
+
+<html lang="en container wx-50">
+  <head>
+    {% load static %}
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% load socialaccount %}
+    
+
+  </head>
+  <body class="text-center justify-content-center container px-3 py-5 w-25">
+    <form class="form-signin">
+      <h1 class="h3 mb-3 font-weight-normal">Sign In</h1>
+      <label for="inputEmail" class="sr-only">Email address</label>
+      {% csrf_token %}
+      <input id="inputEmail" class="form-control w-15" placeholder="Email address" required="" autofocus="" type="email">
+      <label for="inputPassword" class="sr-only">Password</label>
+      <input id="inputPassword" class="form-control w-15" placeholder="Password" required="" type="password">
+      <button class="btn btn-lg btn-primary btn-block mt-4" type="submit">Sign in</button>
+      
+    </form>
+
+    <h1 class="h3 mb-3 font-weight-normal">hello {{ user.first_name }}</h1>
+    
+    
+        <h1></h1>
+        <center>
+        <div class="g-signin2 mt-5" data-onsuccess="onSignIn"></div>
+        <a href="{% provider_login_url 'google' %}" class="btn"> Login With Google </a>
+        </center>
+    
+
+  </body>
+</html>
+
+
+
+<!-- 
+    reference:
+    https://stackoverflow.com/questions/26585754/writing-a-django-login-page-with-bootstrap -->

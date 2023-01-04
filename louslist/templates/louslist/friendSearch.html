@@ -1,0 +1,138 @@
+
+{% load static %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% load socialaccount %}
+{% load lous_extra %}
+
+<head>
+
+</head>
+
+<body>
+  
+<nav class="navbar navbar-expand-md bg-dark navbar-dark sticky-top">
+    <div class="container-fluid">
+        <ul class="navbar-nav">
+        <a class="navbar-brand" href="/">UVA Courses</a>
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+            <a class="nav-link " href="/">Departments</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/schedule/">My Schedule</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link " href="/all-profiles/">Find Friends</a>
+        </li>
+        {% endif %}
+        </ul>
+        <ul class="navbar-nav d-flex align-items-center">
+          <li class="nav-item">
+            <form class="d-flex my-3" action="/search/" method="post">
+                {% csrf_token %}
+                <input type="search" class="form-control rounded" placeholder="Search" name="searched" />
+                <input class="btn btn-outline-secondary" type="submit" value="Search">
+            </form>
+            </li>
+            <li class="nav-item dropdown">
+            {% if user.is_authenticated %}
+            <a class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {{user.first_name}}
+            </a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/profile/">My Profile</a></li>
+                <li><a class="dropdown-item" href="/my-invites/">Friend Requests</a></li>
+                <li><a class="dropdown-item" href="/logout/">Log out</a>
+            </ul>
+            </li>
+            
+            {% else %}
+            <a class ="nav-link" href="{% provider_login_url 'google' %}">Login</a>
+            {% endif %}
+            <li class="nav-item mx-5">  </li>
+     
+        </ul>
+    </div>
+    </nav>
+
+
+
+    <html>
+        <br>
+        <br>
+        <div class="container">
+            <div class="row">
+              <div class="col-3"></div>
+              <div class="col-6">
+                <form class="d-flex" action="/friendSearch/" method="post">
+                    {% csrf_token %}
+                    <input type="search" class="form-control rounded" placeholder="Search" name="searched" />
+                    <input class="btn btn-outline-secondary" type="submit" value="Search">
+                  </form>
+              </div>
+              <div class="col-3"></div>
+            </div>
+          </div>
+        
+            
+            
+
+        <center>
+            <h2>Search Results For "{{searched}}"</h2>
+        </center>
+        {% block content %}
+
+    {% if is_empty %}
+    <div class="d-flex justify-content-around mt-4">
+        <div class="card " style="width: 20rem;">
+          <div class="card-body">
+            <h5 class="card-title">No Profiles Found</h5>
+          </div>
+        </div>
+    {% endif %} 
+
+    <div class="row mb-4">
+        {% for obj in profiles %}
+        <div class="col-sm-3 d-flex justify-content-around mt-5">
+            <div class="card " style="width: 16rem;">
+                <img class="card-img-top" src="{{obj.user.socialaccount_set.all.0.get_avatar_url}}">
+                <div class="card-body">
+                  <h5 class="card-title">{{ obj.user.first_name }} {{ obj.user.last_name }}</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">Username: {{ obj.user }}</li>
+                  <li class="list-group-item">Bio: {{ obj.bio }}</li>
+                  <li class="list-group-item  d-flex justify-content-center"><a href="/profiles/{{obj.user.id}}" class="btn btn-secondary">View Profile</a></li>
+
+                  {% if obj.user not in rel_receiver and obj.user not in rel_sender %}
+                  <li class="list-group-item  d-flex justify-content-center">
+                  <form action='/send_invite/' method="POST">
+                      {% csrf_token %}
+                      <input type="hidden" name="profile_pk" value={{obj.pk}}>
+                        <button type="submit" class="btn btn-success ">Add To Friends</button>
+                  </form></li>
+              {% endif %}
+
+              {% if obj.user in rel_receiver and request.user not in obj.friends.all %}
+              <li class="list-group-item  d-flex justify-content-center"> <button type="button" class="btn btn-warning" disabled>Pending</button> </li>
+              {% endif %}
+
+              {% if request.user in obj.friends.all %}
+              <li class="list-group-item  d-flex justify-content-center"> <form action='/remove_friend/' method="POST">
+                      {% csrf_token %}
+                      <input type="hidden" name="profile_pk" value={{obj.pk}}>
+                      <button type="submit" class="btn btn-danger">Remove Friend</button>
+                  </form></li>
+              {% endif %}
+                </ul>
+              </div>
+        </div>
+        {% endfor %}
+    </div>
+
+{% endblock content %}
+
+          
+      </html>
