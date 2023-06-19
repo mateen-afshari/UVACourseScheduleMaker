@@ -9,9 +9,9 @@ from django.template import loader
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.db.models import Q
-
+import ssl
 import urllib, json
-
+import requests
 from .models import Comment, Course, Schedule, User, Profile, Relationship
 
 
@@ -20,10 +20,10 @@ class IndexView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        url = "http://luthers-list.herokuapp.com/api/deptlist/?format=json"
-        response = urllib.request.urlopen(url)
-        data = json.loads(response.read())
-
+        url = "https://sisuva.admin.virginia.edu/psc/ihprd/UVSS/SA/s/WEBLIB_HCX_CM.H_CLASS_SEARCH.FieldFormula.IScript_ClassSearchOptions?institution=UVA01&term=1228"
+        resp = requests.get(url, verify=False)
+        data = resp.json()
+  
         collegeArts = set(["AAS","MSP","AMST","GSMS","KICH","CREO", "ELA","HIME","NESC","COGS","ANTH","ARAB","ARAD","ARCY","ARTH","ARTR","ARTS","ASL","ASTR","BIOL","CASS","CHEM","CHIN","TURK","CHTR","CLAS","COLA","CPLT","DANC","DRAM","EALC","EAST","ECON","EGMT","ENCW","ENGL","ENWR","ETP","EVSC","FORU","FREN","FRTR","GDS","GERM","GETR","GREE","GSGS","GSSJ","GSVS","HEBR","HIAF","HIEA","HIEU","HILA","HIND","HISA","HIST","HIUS","HSCI","INST","ITAL","ITTR","JAPN","JPTR","JWST","KOR","LASE","LATI","LING","LNGS","MATH","MDST","MESA","MEST","MUSI","PERS","PETR","PHIL","PHYS","PHS","PLAP","PLCP","PLIR","PLPT","POL","PORT","POTR","PPL","PSYC","RELA","RELB","RELC","RELG","RELH","RELI","RELJ","RELS","RUSS","RUTR","SANS","SAST","SATR","SLAV","SLFK","SLTR","SOC","SPAN","SPTR","STAT","TBTN","URDU","USEM","WGS","YIDD"])
         engineering = set(["CS","APMA","CE","BME","CHE","CPE","ECE","MSE","MAE","STS","SYS"])
         education = set(["EDHS","EDLF","EDIS","KINE","KLPA"])
@@ -41,7 +41,7 @@ class IndexView(generic.ListView):
         batt =[]
         rest = []
 
-        for i in data:
+        for i in data['subjects']:
             if i['subject'] in collegeArts:
                 caas.append(i['subject'])
             elif i['subject'] in engineering:
@@ -81,10 +81,11 @@ class DepartmentView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         dept = self.kwargs.get('department')
+        print("----------------------------------------------------------" + dept)
         context = super(DepartmentView, self).get_context_data(**kwargs)
-        url = "http://luthers-list.herokuapp.com/api/dept/%s/?format=json" % (dept)
-        response = urllib.request.urlopen(url)
-        data = json.loads(response.read())
+        url = "https://sisuva.admin.virginia.edu/psc/ihprd/UVSS/SA/s/WEBLIB_HCX_CM.H_CLASS_SEARCH.FieldFormula.IScript_ClassSearch?institution=UVA01&term=1228&subject=" + dept
+        response = requests.get(url, verify=False)
+        data = response.json()
 
 
         context= {
@@ -350,9 +351,9 @@ class DepartmentView(generic.ListView):
     def get_context_data(self, **kwargs):
         dept = self.kwargs.get('department')
         context = super(DepartmentView, self).get_context_data(**kwargs)
-        url = "http://luthers-list.herokuapp.com/api/dept/%s/?format=json" % (dept)
-        response = urllib.request.urlopen(url)
-        data = json.loads(response.read())
+        url = "https://sisuva.admin.virginia.edu/psc/ihprd/UVSS/SA/s/WEBLIB_HCX_CM.H_CLASS_SEARCH.FieldFormula.IScript_ClassSearch?institution=UVA01&term=1228&subject=" + dept
+        response = requests.get(url, verify=False)
+        data = response.json()
 
 
         context= {
