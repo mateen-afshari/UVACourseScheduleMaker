@@ -1,6 +1,4 @@
-# Project Name
-
-UVA Schedule Builder Website
+# UVA Schedule Builder Website
 
 ## Description
 
