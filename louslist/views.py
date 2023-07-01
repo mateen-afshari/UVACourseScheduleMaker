@@ -9,22 +9,21 @@ from django.template import loader
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.db.models import Q
-import ssl
-import urllib, json
 import requests
-import urllib3
 from .models import Comment, Course, Schedule, User, Profile, Relationship
-from urllib3.exceptions import InsecureRequestWarning
+
+
 
 
 class IndexView(generic.ListView):
     template_name = 'louslist/index.html'
 
     def get_context_data(self, **kwargs):
-        requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+      
         context = super(IndexView, self).get_context_data(**kwargs)
         url = "https://sisuva.admin.virginia.edu/psc/ihprd/UVSS/SA/s/WEBLIB_HCX_CM.H_CLASS_SEARCH.FieldFormula.IScript_ClassSearchOptions?institution=UVA01&term=1228"
-        resp = requests.get(url, verify=False)
+        s = requests.Session()
+        resp = s.get(url)
         data = resp.json()
   
         collegeArts = set(["AAS","MSP","AMST","GSMS","KICH","CREO", "ELA","HIME","NESC","COGS","ANTH","ARAB","ARAD","ARCY","ARTH","ARTR","ARTS","ASL","ASTR","BIOL","CASS","CHEM","CHIN","TURK","CHTR","CLAS","COLA","CPLT","DANC","DRAM","EALC","EAST","ECON","EGMT","ENCW","ENGL","ENWR","ETP","EVSC","FORU","FREN","FRTR","GDS","GERM","GETR","GREE","GSGS","GSSJ","GSVS","HEBR","HIAF","HIEA","HIEU","HILA","HIND","HISA","HIST","HIUS","HSCI","INST","ITAL","ITTR","JAPN","JPTR","JWST","KOR","LASE","LATI","LING","LNGS","MATH","MDST","MESA","MEST","MUSI","PERS","PETR","PHIL","PHYS","PHS","PLAP","PLCP","PLIR","PLPT","POL","PORT","POTR","PPL","PSYC","RELA","RELB","RELC","RELG","RELH","RELI","RELJ","RELS","RUSS","RUTR","SANS","SAST","SATR","SLAV","SLFK","SLTR","SOC","SPAN","SPTR","STAT","TBTN","URDU","USEM","WGS","YIDD"])
