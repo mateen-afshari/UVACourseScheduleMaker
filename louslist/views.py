@@ -87,11 +87,11 @@ class DepartmentView(generic.ListView):
         response = requests.get(url, verify=False)
         data = response.json()
 
-
+       
         context= {
             'data' : data,
         }
-
+        
         return context
 
     def get_queryset(self):
@@ -355,7 +355,7 @@ class DepartmentView(generic.ListView):
         response = requests.get(url, verify=False)
         data = response.json()
 
-
+       
         context= {
             'data' : data,
         }
