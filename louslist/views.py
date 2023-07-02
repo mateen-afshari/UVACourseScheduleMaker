@@ -11,6 +11,8 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 import requests
 from .models import Comment, Course, Schedule, User, Profile, Relationship
+import urllib3
+urllib3.disable_warnings()
 
 
 
