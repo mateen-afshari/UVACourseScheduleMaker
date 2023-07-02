@@ -36,6 +36,77 @@ class IndexView(generic.ListView):
         commmerce = set(["COMM","GCOM", "ACCT"])
         batten = set(["LPPA","LPPL","LPPP","LPPS"])
 
+        # for dept in collegeArts:
+
+        #     url2 = "https://sisuva.admin.virginia.edu/psc/ihprd/UVSS/SA/s/WEBLIB_HCX_CM.H_CLASS_SEARCH.FieldFormula.IScript_ClassSearch?institution=UVA01&term=1228&subject=" + dept
+        #     response = requests.get(url2, verify=False)
+        #     data2 = response.json()
+
+        #     for course in data2:
+                
+        #         try:
+                    
+        #             Course.objects.get(course_id=course['class_nbr']) 
+
+        #         except:
+        #             form = Course()
+        #             form.title = course["descr"] 
+        #             form.subject = course["subject"]
+        #             form.number = course["catalog_nbr"]
+        #             form.section = course["class_section"]
+        #             if "-" in str(course["units"]):
+        #                 form.credits = int(str(course["units"])[0])
+        #             else:
+        #                 form.credits = int(course["units"])
+        #             form.instructor = course["instructors"][0]["name"] 
+                    
+        #             form.location = course["meetings"][0]["facility_descr"] 
+        #             form.course_id = course["class_nbr"]
+                    
+                    
+        #             # Given string
+        #             time_str = course["meetings"][0]["start_time"]
+        #             # Extract the time portion without the timezone offset
+        #             time_str = time_str.split('-')[0]
+        #             if len(time_str) >= 2:
+        #                 # Define the format of the time string
+        #                 time_format = "%H.%M.%S.%f"
+
+        #                 # Convert the string to a datetime object
+        #                 time_obj = datetime.datetime.strptime(time_str, time_format)
+
+        #                 # Format the datetime object to display in 12-hour format without seconds and microseconds
+        #                 time_str_12h = time_obj.strftime("%I:%M %p")
+
+                        
+        #                 time_str2 = course["meetings"][0]["end_time"]
+        #                 # Extract the time portion without the timezone offset
+        #                 time_str2 = time_str2.split('-')[0]
+
+        #                 # Define the format of the time string
+        #                 time_format2 = "%H.%M.%S.%f"
+
+        #                 # Convert the string to a datetime object
+        #                 time_obj2 = datetime.datetime.strptime(time_str2, time_format2)
+        #                 time_str_12h2 = time_obj2.strftime("%I:%M %p")
+
+        #                 # Format the datetime object to display in 12-hour format without seconds and microseconds
+        #                 form.time = str(time_str_12h) + " - " + str(time_str_12h2)
+        #             else:
+        #                 form.time = "- -"
+
+        #             form.days = course["meetings"][0]["days"]
+                    
+
+        #             form.save()
+        #             print("added")
+
+
+
+
+
+
+
         caas =[]
         seas=[]
         edu =[]
@@ -359,64 +430,7 @@ class DepartmentView(generic.ListView):
         response = requests.get(url, verify=False)
         data = response.json()
 
-        # for course in data:
-            
-        #     try:
-                
-        #         Course.objects.get(course_id=course['class_nbr']) 
-
-        #     except:
-        #         form = Course()
-        #         form.title = course["descr"] 
-        #         form.subject = course["subject"]
-        #         form.number = course["catalog_nbr"]
-        #         form.section = course["class_section"]
-        #         if "-" in str(course["units"]):
-        #             form.credits = int(str(course["units"])[0])
-        #         else:
-        #             form.credits = course["units"]
-        #         form.instructor = course["instructors"][0]["name"] 
-                
-        #         form.location = course["meetings"][0]["facility_descr"] 
-        #         form.course_id = course["class_nbr"]
-                
-                
-        #         # Given string
-        #         time_str = course["meetings"][0]["start_time"]
-        #         # Extract the time portion without the timezone offset
-        #         time_str = time_str.split('-')[0]
-        #         if len(time_str) >= 2:
-        #             # Define the format of the time string
-        #             time_format = "%H.%M.%S.%f"
-
-        #             # Convert the string to a datetime object
-        #             time_obj = datetime.datetime.strptime(time_str, time_format)
-
-        #             # Format the datetime object to display in 12-hour format without seconds and microseconds
-        #             time_str_12h = time_obj.strftime("%I:%M %p")
-
-                    
-        #             time_str2 = course["meetings"][0]["end_time"]
-        #             # Extract the time portion without the timezone offset
-        #             time_str2 = time_str2.split('-')[0]
-
-        #             # Define the format of the time string
-        #             time_format2 = "%H.%M.%S.%f"
-
-        #             # Convert the string to a datetime object
-        #             time_obj2 = datetime.datetime.strptime(time_str2, time_format2)
-        #             time_str_12h2 = time_obj2.strftime("%I:%M %p")
-
-        #             # Format the datetime object to display in 12-hour format without seconds and microseconds
-        #             form.time = str(time_str_12h) + " - " + str(time_str_12h2)
-        #         else:
-        #             form.time = "- -"
-
-        #         form.days = course["meetings"][0]["days"]
-                
-
-        #         form.save()
-        #         print("added")
+        
         context= {
             'data' : data,
         }
